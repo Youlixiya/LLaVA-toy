@@ -71,16 +71,17 @@ def resize(
         mode: str = "bicubic",
         align_corners: bool or None = False,
 ) -> torch.Tensor:
+    dtype=x.dtype
     if mode in ["bilinear", "bicubic"]:
         return F.interpolate(
-            x,
+            x.float(),
             size=size,
             scale_factor=scale_factor,
             mode=mode,
             align_corners=align_corners,
-        )
+        ).to(dtype=dtype)
     elif mode in ["nearest", "area"]:
-        return F.interpolate(x, size=size, scale_factor=scale_factor, mode=mode)
+        return F.interpolate(x.float(), size=size, scale_factor=scale_factor, mode=mode).to(dtype=dtype)
     else:
         raise NotImplementedError(f"resize(mode={mode}) not implemented.")
 
