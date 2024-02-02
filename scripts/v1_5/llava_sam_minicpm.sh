@@ -36,8 +36,8 @@ deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path ./ckpts/MiniCPM-2B-sft-bf16 \
     --version llava_minicpm \
-    --data_path data/llava_v1_5_mix665k.json \
-    --image_folder data \
+    --data_path data/llava_instruct_150k.json+ \
+    --image_folder data/coco/train2017 \
     --vision_tower sam \
     --pretrain_mm_mlp_adapter ./checkpoints/llava-sam-minicpm-2b-pretrain/mm_projector.bin \
     --mm_projector_type sam \

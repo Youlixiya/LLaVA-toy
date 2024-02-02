@@ -39,8 +39,8 @@ deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path ./ckpts/TinyLlama-1.1B-Chat-v1.0 \
     --version llava_tinyllama \
-    --data_path data/llava_v1_5_mix665k.json+data/Flickr30k_train.json+data/coco_train.json \
-    --image_folder data+data/flickr30k-images+data/coco/train2017 \
+    --data_path data/llava_instruct_150k.json+data/Flickr30k_train.json+data/coco_train.json+data/refcoco3_train.json \
+    --image_folder data/coco/train2017+data/flickr30k-images+data/coco/train2017+data/coco/train2014 \
     --vision_tower sam \
     --pretrain_mm_mlp_adapter ./checkpoints/llava-sam-tinyllama-v1.0-1.1b-pretrain/mm_projector.bin \
     --mm_projector_type sam \
