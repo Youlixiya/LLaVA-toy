@@ -21,7 +21,10 @@ import torch.nn as nn
 from .multimodal_encoder.builder import build_vision_tower
 from .multimodal_projector.builder import build_vision_projector
 
-from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
+from llava.constants import (IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN,
+                             DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN,
+                             DEFAULT_BOX_START_TOKEN, DEFAULT_BOX_END_TOKEN,
+                             DEFAULT_REF_START_TOKEN, DEFAULT_REF_END_TOKEN)
 
 from llava.mm_utils import get_anyres_image_grid_shape
 
@@ -326,6 +329,8 @@ class LlavaMetaForCausalLM(ABC):
         return None, position_ids, attention_mask, past_key_values, new_input_embeds, new_labels
 
     def initialize_vision_tokenizer(self, model_args, tokenizer):
+        tokenizer.add_tokens([DEFAULT_REF_START_TOKEN, DEFAULT_REF_END_TOKEN, DEFAULT_BOX_START_TOKEN, DEFAULT_BOX_END_TOKEN], special_tokens=True)
+        self.resize_token_embeddings(len(tokenizer))
         if model_args.mm_use_im_patch_token:
             tokenizer.add_tokens([DEFAULT_IMAGE_PATCH_TOKEN], special_tokens=True)
             self.resize_token_embeddings(len(tokenizer))

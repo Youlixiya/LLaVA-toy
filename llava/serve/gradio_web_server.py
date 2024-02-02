@@ -168,6 +168,8 @@ def http_bot(state, model_selector, temperature, top_p, max_new_tokens, request:
         if "llava" in model_name.lower():
             if 'llama-2' in model_name.lower():
                 template_name = "llava_llama_2"
+            elif 'tinyllama' in model_name.lower():
+                template_name = "llava_tinyllama"
             elif "mistral" in model_name.lower() or "mixtral" in model_name.lower():
                 if 'orca' in model_name.lower():
                     template_name = "mistral_orca"
