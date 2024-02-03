@@ -6,5 +6,6 @@ try:
     from .language_model.llava_minicpm import LlavaMiniCPMForCausalLM, LlavaMiniCPMConfig
     from .language_model.llava_sam_minicpm import LlavaSAMMiniCPMForCausalLM, LlavaSAMMiniCPMConfig
     from .language_model.llava_phi import LlavaPhiForCausalLM, LlavaPhiConfig
+    from .language_model.llava_opt import LlavaOPTForCausalLM, LlavaOPTConfig
 except:
     pass

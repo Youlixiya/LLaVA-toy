@@ -721,7 +721,8 @@ def preprocess(
         return preprocess_v1(sources, tokenizer, has_image=has_image)
     if conversation_lib.default_conversation.version == "mpt":
         return preprocess_mpt(sources, tokenizer, has_image=has_image)
-    if conversation_lib.default_conversation.version.startswith('phi'):
+    if conversation_lib.default_conversation.version.startswith('phi') or \
+        conversation_lib.default_conversation.version.startswith('opt'):
         return preprocess_phi(sources, tokenizer, has_image=has_image)
     # add end signal and concatenate together
     conversations = []
@@ -930,6 +931,12 @@ def train(attn_implementation=None):
             )
         elif 'phi' in model_args.model_name_or_path.lower():
             model = LlavaPhiForCausalLM.from_pretrained(
+                model_args.model_name_or_path,
+                cache_dir=training_args.cache_dir,
+                **bnb_model_from_pretrained_args
+            )
+        elif 'opt' in model_args.model_name_or_path.lower():
+            model = LlavaOPTForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
                 cache_dir=training_args.cache_dir,
                 **bnb_model_from_pretrained_args
