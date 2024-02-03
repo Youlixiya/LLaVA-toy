@@ -56,6 +56,8 @@ class SAMVisionTower(nn.Module):
     image_size=1024
     sam_model_type='edge_sam'
     sam_checkpoint='./ckpts/sam/edge_sam_3x.pth'
+    # sam_model_type='vit_b'
+    # sam_checkpoint='./ckpts/sam/sam_vit_b_01ec64.pth'
     def __init__(self, vision_tower, args, delay_load=False):
         super().__init__()
 
@@ -120,6 +122,14 @@ class SAMVisionTower(nn.Module):
     @property
     def device(self):
         return self.vision_tower.features[0][0].c.weight.data.device
+    
+    # @property
+    # def dtype(self):
+    #     return self.vision_tower.patch_embed.proj.weight.data.dtype
+
+    # @property
+    # def device(self):
+    #     return self.vision_tower.patch_embed.proj.weight.data.device
 
     @property
     def config(self):
