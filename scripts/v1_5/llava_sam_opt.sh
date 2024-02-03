@@ -39,7 +39,7 @@ deepspeed llava/train/train_mem.py \
     --data_path data/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
     --image_folder data/LLaVA-Pretrain/images \
     --vision_tower sam \
-    --freeze_backbone freeze_backbone \
+    --freeze_backbone False \
     --mm_projector_type sam \
     --freeze_llm True \
     --mm_vision_select_layer -2 \
