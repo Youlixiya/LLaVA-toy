@@ -1,0 +1,5 @@
+opencv-python
+Pillow
+sentencepiece
+# torch
+# flash-attn

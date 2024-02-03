@@ -1022,13 +1022,31 @@ def train(attn_implementation=None):
                 **bnb_model_from_pretrained_args
             )
         elif 'opt' in model_args.model_name_or_path.lower():
-            model = LlavaOPTForCausalLM.from_pretrained(
-                model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir,
-                attn_implementation=attn_implementation,
-                torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-                **bnb_model_from_pretrained_args
-            )
+            if 'sam' in model_args.model_name_or_path:
+                model = LlavaSAMOPTForCausalLM.from_pretrained(
+                    model_args.model_name_or_path,
+                    cache_dir=training_args.cache_dir,
+                    attn_implementation=attn_implementation,
+                    torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                    **bnb_model_from_pretrained_args
+                )
+            elif 'tap' in model_args.model_name_or_path:
+                model = LlavaTAPOPTForCausalLM.from_pretrained(
+                    model_args.model_name_or_path,
+                    cache_dir=training_args.cache_dir,
+                    attn_implementation=attn_implementation,
+                    torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                    **bnb_model_from_pretrained_args
+                )
+            else:
+                model = LlavaOPTForCausalLM.from_pretrained(
+                    model_args.model_name_or_path,
+                    cache_dir=training_args.cache_dir,
+                    attn_implementation=attn_implementation,
+                    torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                    **bnb_model_from_pretrained_args
+                )
+            
         elif 'minicpm' in model_args.model_name_or_path:
             if 'sam' in model_args.model_name_or_path:
                 model = LlavaSAMMiniCPMForCausalLM.from_pretrained(
@@ -1171,10 +1189,6 @@ def train(attn_implementation=None):
             model.requires_grad_(False)
             for p in model.get_model().mm_projector.parameters():
                 p.requires_grad = True
-        # if model_args.freeze_llm:
-        #     model.requires_grad_(False)
-        #     for p in model.get_model().mm_projector.parameters():
-        #         p.requires_grad = True
         model.config.freeze_mm_mlp_adapter = training_args.freeze_mm_mlp_adapter
         if training_args.freeze_mm_mlp_adapter:
             for p in model.get_model().mm_projector.parameters():

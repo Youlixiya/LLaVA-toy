@@ -1,3 +1,37 @@
+deepspeed llava/train/train_mem.py \
+    --deepspeed ./scripts/zero2.json \
+    --model_name_or_path facebook/opt-125m \
+    --version plain \
+    --data_path data/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
+    --image_folder data/LLaVA-Pretrain/images \
+    --vision_tower tap \
+    --mm_projector_type tap \
+    --tune_mm_mlp_adapter True \
+    --mm_vision_select_layer -2 \
+    --mm_use_im_start_end False \
+    --mm_use_im_patch_token False \
+    --bf16 True \
+    --output_dir ./checkpoints/llava-tap-opt-125m-pretrain \
+    --num_train_epochs 1 \
+    --per_device_train_batch_size 16 \
+    --per_device_eval_batch_size 4 \
+    --gradient_accumulation_steps 2 \
+    --evaluation_strategy "no" \
+    --save_strategy "steps" \
+    --save_steps 24000 \
+    --save_total_limit 1 \
+    --learning_rate 1e-3 \
+    --weight_decay 0. \
+    --warmup_ratio 0.03 \
+    --lr_scheduler_type "cosine" \
+    --logging_steps 1 \
+    --tf32 True \
+    --model_max_length 2048 \
+    --gradient_checkpointing True \
+    --dataloader_num_workers 4 \
+    --lazy_preprocess True \
+    --report_to wandb
+
 # deepspeed llava/train/train_mem.py \
 #     --deepspeed ./scripts/zero2.json \
 #     --model_name_or_path facebook/opt-125m \
@@ -5,8 +39,9 @@
 #     --data_path data/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
 #     --image_folder data/LLaVA-Pretrain/images \
 #     --vision_tower sam \
+#     --freeze_backbone False \
 #     --mm_projector_type sam \
-#     --tune_mm_mlp_adapter True \
+#     --freeze_llm True \
 #     --mm_vision_select_layer -2 \
 #     --mm_use_im_start_end False \
 #     --mm_use_im_patch_token False \
@@ -35,52 +70,18 @@
 deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
-    --version plain \
-    --data_path data/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
-    --image_folder data/LLaVA-Pretrain/images \
-    --vision_tower sam \
-    --mm_projector_type sam \
-    --freeze_llm True \
-    --mm_vision_select_layer -2 \
-    --mm_use_im_start_end False \
-    --mm_use_im_patch_token False \
-    --bf16 True \
-    --output_dir ./checkpoints/llava-sam-opt-125m-pretrain \
-    --num_train_epochs 1 \
-    --per_device_train_batch_size 16 \
-    --per_device_eval_batch_size 4 \
-    --gradient_accumulation_steps 2 \
-    --evaluation_strategy "no" \
-    --save_strategy "steps" \
-    --save_steps 24000 \
-    --save_total_limit 1 \
-    --learning_rate 1e-3 \
-    --weight_decay 0. \
-    --warmup_ratio 0.03 \
-    --lr_scheduler_type "cosine" \
-    --logging_steps 1 \
-    --tf32 True \
-    --model_max_length 2048 \
-    --gradient_checkpointing True \
-    --dataloader_num_workers 4 \
-    --lazy_preprocess True \
-    --report_to wandb
-
-deepspeed llava/train/train_mem.py \
-    --deepspeed ./scripts/zero2.json \
-    --model_name_or_path facebook/opt-125m \
     --version opt \
     --data_path data/llava_v1_5_mix665k.json \
     --image_folder data \
-    --vision_tower sam \
-    --pretrain_mm_mlp_adapter ./checkpoints/llava-sam-opt-125m-pretrain/mm_projector.bin \
-    --mm_projector_type sam \
+    --vision_tower tap \
+    --pretrain_mm_mlp_adapter ./checkpoints/llava-tap-opt-125m-pretrain/mm_projector.bin \
+    --mm_projector_type tap \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --group_by_modality_length True \
     --bf16 True \
-    --output_dir ./checkpoints/llava-sam-opt-125m \
+    --output_dir ./checkpoints/llava-tap-opt-125m \
     --num_train_epochs 1 \
     --per_device_train_batch_size 4 \
     --per_device_eval_batch_size 1 \
@@ -102,19 +103,19 @@ deepspeed llava/train/train_mem.py \
     --report_to wandb
 
 deepspeed llava/train/train_mem.py \
-    --deepspeed ./scripts/zero3.json \
-    --model_name_or_path ./checkpoints/llava-sam-opt-125m \
+    --deepspeed ./scripts/zero2.json \
+    --model_name_or_path ./checkpoints/llava-tap-opt-125m \
     --version opt \
     --data_path data/Flickr30k_train.json+data/coco_train.json+data/refcoco3_train.json \
     --image_folder data/flickr30k-images+data/coco/train2017+data/coco/train2014 \
-    --vision_tower sam \
-    --mm_projector_type sam \
+    --vision_tower tap \
+    --mm_projector_type tap \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --group_by_modality_length True \
     --bf16 True \
-    --output_dir  ./checkpoints/llava-sam-opt-125m-rec \
+    --output_dir  ./checkpoints/llava-tap-opt-125m-rec \
     --num_train_epochs 1 \
     --per_device_train_batch_size 4 \
     --per_device_eval_batch_size 1 \

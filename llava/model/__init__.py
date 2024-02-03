@@ -8,5 +8,6 @@ try:
     from .language_model.llava_phi import LlavaPhiForCausalLM, LlavaPhiConfig
     from .language_model.llava_opt import LlavaOPTForCausalLM, LlavaOPTConfig
     from .language_model.llava_sam_opt import LlavaSAMOPTForCausalLM, LlavaSAMOPTConfig
+    from .language_model.llava_tap_opt import LlavaTAPOPTForCausalLM, LlavaTAPOPTConfig
 except:
     pass
