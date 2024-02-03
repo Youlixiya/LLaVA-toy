@@ -10,6 +10,7 @@ class SeparatorStyle(Enum):
     MPT = auto()
     PLAIN = auto()
     LLAMA_2 = auto()
+    OPT = auto()
 
 
 @dataclasses.dataclass
@@ -23,6 +24,7 @@ class Conversation:
     sep: str = "###"
     sep2: str = None
     version: str = "Unknown"
+    special_sep: str = "###"
 
     skip_next: bool = False
 
@@ -88,6 +90,27 @@ class Conversation:
                 else:
                     ret += ""
             ret = ret.lstrip(self.sep)
+        elif self.sep_style in [SeparatorStyle.OPT]:
+            wrap_sys = lambda msg: f"<<SYS>>\n{msg}\n<</SYS>>\n\n"
+            wrap_inst = lambda msg: f"[INST] {msg} [/INST]"
+            ret = ""
+
+            for i, (role, message) in enumerate(messages):
+                if i == 0:
+                    assert message, "first message should not be none"
+                    assert role == self.roles[0], "first message should come from user"
+                if message:
+                    if type(message) is tuple:
+                        message, _, _ = message
+                    if i == 0: message = wrap_sys(self.system) + message
+                    if i % 2 == 0:
+                        message = wrap_inst(message)
+                        ret += self.special_sep + message
+                    else:
+                        ret += " " + message + " " + self.sep2
+                else:
+                    ret += ""
+            ret = ret.lstrip(self.special_sep)
         elif self.sep_style == SeparatorStyle.PLAIN:
             seps = [self.sep, self.sep2]
             ret = self.system
@@ -405,15 +428,16 @@ conv_phi = Conversation(
 )
 
 conv_opt = Conversation(
-    system="A chat between a curious user and an artificial intelligence assistant. "
-    "The assistant gives helpful, detailed, and polite answers to the user's questions.",
+    system="You are a helpful language and vision assistant. "
+           "You are able to understand the visual content that the user provides, "
+           "and assist the user with a variety of tasks using natural language.",
     roles=("USER", "ASSISTANT"),
     version="opt",
     messages=(),
     offset=0,
-    sep_style=SeparatorStyle.TWO,
-    sep=" ",
-    sep2="<|endoftext|>",
+    sep_style=SeparatorStyle.OPT,
+    sep="</s>",
+    sep2="</s>",
 )
 
 default_conversation = conv_vicuna_v1
