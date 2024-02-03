@@ -54,7 +54,8 @@ IS_TOKENIZER_GREATER_THAN_0_14 = version.parse(tokenizers.__version__) >= versio
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="facebook/opt-125m")
     version: Optional[str] = field(default="v0")
-    freeze_backbone: bool = field(default=False)
+    freeze_backbone: bool = field(default=True)
+    freeze_llm: bool = field(default=True)
     tune_mm_mlp_adapter: bool = field(default=False)
     vision_tower: Optional[str] = field(default=None)
     mm_vision_select_layer: Optional[int] = field(default=-1)   # default to the last layer
@@ -1148,6 +1149,7 @@ def train(attn_implementation=None):
         else:
             conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
 
+        
     if model_args.vision_tower is not None:
         model.get_model().initialize_vision_modules(
             model_args=model_args,
@@ -1169,7 +1171,10 @@ def train(attn_implementation=None):
             model.requires_grad_(False)
             for p in model.get_model().mm_projector.parameters():
                 p.requires_grad = True
-
+        # if model_args.freeze_llm:
+        #     model.requires_grad_(False)
+        #     for p in model.get_model().mm_projector.parameters():
+        #         p.requires_grad = True
         model.config.freeze_mm_mlp_adapter = training_args.freeze_mm_mlp_adapter
         if training_args.freeze_mm_mlp_adapter:
             for p in model.get_model().mm_projector.parameters():

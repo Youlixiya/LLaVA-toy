@@ -82,8 +82,9 @@ class SAMVisionTower(nn.Module):
         # self.tap.text_decoder.reset_cache(max_batch_size=8)
         self.sam = sam_model_registry[self.sam_model_type](checkpoint=self.sam_checkpoint)
         self.vision_tower = self.sam.image_encoder
-        self.sam.requires_grad_(False)
-        self.vision_tower.requires_grad_(False)
+        if self.args.freeze_backbone:
+            self.sam.requires_grad_(False)
+            self.vision_tower.requires_grad_(False)
 
         self.is_loaded = True
 
