@@ -107,8 +107,11 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 model = LlavaPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
             elif 'opt' in model_name.lower():
                 tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
-                # cfg_pretrained = AutoConfig.from_pretrained(model_path)
-                model = LlavaOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                cfg_pretrained = AutoConfig.from_pretrained(model_path)
+                if 'sam' in  model_name.lower():
+                    model = LlavaSAMOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
+                else:
+                    model = LlavaOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained,**kwargs)
             elif 'minicpm' in model_name.lower():
                 tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
                 cfg_pretrained = AutoConfig.from_pretrained(model_path)
@@ -145,7 +148,11 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             elif 'opt' in model_name.lower():
                 
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
-                model = LlavaOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
+                if 'sam' in  model_name.lower():
+                    model = LlavaSAMOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                else:
+                    model = LlavaOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
+                
             elif 'minicpm' in model_name.lower():
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 if 'sam' in  model_name.lower():
