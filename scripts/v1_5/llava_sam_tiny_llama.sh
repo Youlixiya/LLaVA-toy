@@ -70,6 +70,6 @@ deepspeed llava/train/train_mem.py \
     --lazy_preprocess True \
     --report_to wandb
 
-python scripts/merge_lora_weights.py --model-path ./checkpoints/llava-tinyllama-v1.0-1.1b-lora \
+python scripts/merge_lora_weights.py --model-path ./checkpoints/llava-sam-tinyllama-v1.0-1.1b-lora \
                                   --model-base ./ckpts/TinyLlama-1.1B-Chat-v1.0 \
-                                  --save-model-path ./checkpoints/llava-tinyllama-v1.0-1.1b
+                                  --save-model-path ./checkpoints/llava-sam-tinyllama-v1.0-1.1b

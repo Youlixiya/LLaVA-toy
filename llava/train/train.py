@@ -722,7 +722,7 @@ def preprocess(
     if conversation_lib.default_conversation.version == "mpt":
         return preprocess_mpt(sources, tokenizer, has_image=has_image)
     if conversation_lib.default_conversation.version.startswith('phi'):
-        return preprocess_mamba(sources, tokenizer, has_image=has_image)
+        return preprocess_phi(sources, tokenizer, has_image=has_image)
     # add end signal and concatenate together
     conversations = []
     for source in sources:

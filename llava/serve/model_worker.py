@@ -169,9 +169,9 @@ class ModelWorker:
 
         max_new_tokens = min(max_new_tokens, max_context_length - input_ids.shape[-1] - num_image_tokens)
 
-        if max_new_tokens < 1:
-            yield json.dumps({"text": ori_prompt + "Exceeds max token length. Please start a new conversation, thanks.", "error_code": 0}).encode() + b"\0"
-            return
+        # if max_new_tokens < 1:
+        #     yield json.dumps({"text": ori_prompt + "Exceeds max token length. Please start a new conversation, thanks.", "error_code": 0}).encode() + b"\0"
+        #     return
 
         thread = Thread(target=model.generate, kwargs=dict(
             inputs=input_ids,
