@@ -27,7 +27,6 @@ from llava.constants import (DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, 
 
 def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
-
     if device != "cuda":
         kwargs['device_map'] = {"": device}
 
@@ -53,7 +52,12 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
             print('Loading LLaVA from base model...')
             if 'llama' in model_name.lower():
-                model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
+                if 'sam' in  model_name.lower():
+                    model = LlavaSAMLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
+                else:
+                    model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
+            elif 'phi' in model_name.lower():
+                model = LlavaPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
             elif 'minicpm' in model_name.lower():
                 if 'sam' in  model_name.lower():
                     model = LlavaSAMMiniCPMForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
@@ -103,8 +107,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 model = LlavaPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
             elif 'opt' in model_name.lower():
                 tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
-                cfg_pretrained = AutoConfig.from_pretrained(model_path)
-                model = LlavaOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
+                # cfg_pretrained = AutoConfig.from_pretrained(model_path)
+                model = LlavaOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
             elif 'minicpm' in model_name.lower():
                 tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
                 cfg_pretrained = AutoConfig.from_pretrained(model_path)
@@ -136,17 +140,18 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                     **kwargs
                 )
             elif 'phi' in model_name.lower():
-                tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
-                model = LlavaPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+                model = LlavaPhiForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
             elif 'opt' in model_name.lower():
-                tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
-                model = LlavaOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                
+                tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+                model = LlavaOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
             elif 'minicpm' in model_name.lower():
-                tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
+                tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 if 'sam' in  model_name.lower():
-                    model = LlavaSAMMiniCPMForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                    model = LlavaSAMMiniCPMForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
                 else:
-                    model = LlavaMiniCPMForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                    model = LlavaMiniCPMForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
             else:
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 if 'sam' in  model_name.lower():
