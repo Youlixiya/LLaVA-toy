@@ -71,8 +71,8 @@ deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
     --version opt \
-    --data_path data/llava_v1_5_mix665k.json \
-    --image_folder data \
+    --data_path data/llava_instruct_150k.json \
+    --image_folder data/coco/train2017 \
     --vision_tower tap \
     --pretrain_mm_mlp_adapter ./checkpoints/llava-tap-opt-125m-pretrain/mm_projector.bin \
     --mm_projector_type tap \

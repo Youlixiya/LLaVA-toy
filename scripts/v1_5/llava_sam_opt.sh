@@ -40,7 +40,7 @@ deepspeed llava/train/train_mem.py \
     --image_folder data/LLaVA-Pretrain/images \
     --vision_tower sam \
     --mm_projector_type sam \
-    --freeze_llm True \
+    --tune_mm_mlp_adapter True \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
@@ -70,8 +70,8 @@ deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
     --version opt \
-    --data_path data/llava_v1_5_mix665k.json \
-    --image_folder data \
+    --data_path data/llava_instruct_150k.json \
+    --image_folder data/coco/train2017 \
     --vision_tower sam \
     --pretrain_mm_mlp_adapter ./checkpoints/llava-sam-opt-125m-pretrain/mm_projector.bin \
     --mm_projector_type sam \

@@ -151,9 +151,9 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 if 'sam' in  model_name.lower():
-                    model = LlavaSAMOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                    model = LlavaSAMOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
                 elif 'tap' in  model_name.lower():
-                    model = LlavaTAPOPTForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, **kwargs)
+                    model = LlavaTAPOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
                 else:
                     model = LlavaOPTForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
                 

@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 from tokenize_anything import model_registry
+from .tap_image_encoder import tap_vit_b_encoder, tap_vit_l_encoder
 
 class BaseProcessor:
     def __init__(self):
@@ -54,9 +55,10 @@ class TAPVisionTower(nn.Module):
     hidden_size=256
     num_patches=4096
     image_size=1024
-    tap_model_type='tap_vit_b'
-    tap_checkpoint='./ckpts/tap/tap_vit_b_b45cbf.pkl'
-    concept_weights='./ckpts/tap/merged_2560.pkl'
+    tap_image_encoder_checkpoint='./ckpts/tap/tap_b_image_encoder.pt'
+    # tap_model_type='tap_vit_b'
+    # tap_checkpoint='./ckpts/tap/tap_vit_b_b45cbf.pkl'
+    # concept_weights='./ckpts/tap/merged_2560.pkl'
     def __init__(self, vision_tower, args, delay_load=False):
         super().__init__()
 
@@ -76,13 +78,15 @@ class TAPVisionTower(nn.Module):
 
     def load_model(self):
         self.image_processor = TAPImageProcessor(image_size=self.image_size)
-        self.tap = model_registry[self.tap_model_type](checkpoint=self.tap_checkpoint)
-        self.tap.concept_projector.reset_weights(self.concept_weights)
-        self.tap.text_decoder.reset_cache(max_batch_size=8)
-        self.vision_tower = self.sam.image_encoder
-        if self.args.freeze_backbone:
-            self.tap.requires_grad_(False)
-            self.vision_tower.requires_grad_(False)
+        # self.tap = model_registry[self.tap_model_type](checkpoint=self.tap_checkpoint)
+        # self.tap.concept_projector.reset_weights(self.concept_weights)
+        # self.tap.text_decoder.reset_cache(max_batch_size=8)
+        # self.vision_tower = self.tap.image_encoder
+        # if self.args.freeze_backbone:
+        self.vision_tower = tap_vit_b_encoder()
+        self.vision_tower.load_state_dict(torch.load(self.tap_image_encoder_checkpoint))
+        # self.tap.requires_grad_(False)
+        self.vision_tower.requires_grad_(False)
 
         self.is_loaded = True
 
@@ -101,11 +105,11 @@ class TAPVisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0))
+                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0))[0]
                 # image_feature = self.feature_select(image_forward_out).to(image.dtype)
                 image_features.append(image_feature)
         else:
-            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype))
+            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype))[0]
             # image_features = self.feature_select(image_forward_outs).to(images.dtype)
 
         return image_features
