@@ -47,7 +47,7 @@ def build_vision_projector(config, delay_load=False, **kwargs):
 
     if projector_type == 'identity':
         return IdentityMap()
-    if projector_type in ['sam', 'tap']:
+    if projector_type in ['sam', 'tap', 'tinyclip']:
         return nn.Sequential(
             nn.Conv2d(config.mm_hidden_size, config.hidden_size, 3, 2, 1),
             nn.SiLU(),
