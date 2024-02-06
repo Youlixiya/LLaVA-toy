@@ -176,7 +176,7 @@ class ModifiedResNet(nn.Module):
         x = self.avgpool(x)
         return x
 
-    def forward(self, x, select_layer=-2):
+    def forward(self, x, select_layer=-2, return_pool_result=True):
         hidden_states = []
         x = self.stem(x)
         hidden_states.append(x)
@@ -190,8 +190,9 @@ class ModifiedResNet(nn.Module):
         hidden_states.append(x)
         # print(x.shape)
         # x = self.attnpool(x)
-
-        return hidden_states[select_layer], self.attnpool(F.interpolate(x, size=(self.image_size // 32, self.image_size // 32)))
-    
+        if return_pool_result: 
+            return hidden_states[select_layer], self.attnpool(F.interpolate(x, size=(self.image_size // 32, self.image_size // 32)))
+        else:
+            return hidden_states[select_layer]
 def build_tinyclip_resnet(layers=[3, 4, 6, 3], output_dim=1024, heads=28, image_size=224, width=56):
     return ModifiedResNet(layers, output_dim, heads, image_size, width)

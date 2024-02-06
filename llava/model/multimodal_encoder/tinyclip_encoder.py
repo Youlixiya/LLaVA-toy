@@ -51,7 +51,7 @@ class TinyCLIPImageProcessor(BaseImageProcessor):
         
 
 class TinyCLIPVisionTower(nn.Module):
-    hidden_size=256
+    hidden_size=896
     num_patches=4096
     image_size=1024
     tinyclip_checkpoint='./ckpts/tinyclip/tinyclip_resnet.pt'
@@ -76,6 +76,7 @@ class TinyCLIPVisionTower(nn.Module):
         self.image_processor = TinyCLIPImageProcessor(image_size=self.image_size)
         self.vision_tower = build_tinyclip_resnet()
         self.vision_tower.requires_grad_(False)
+        # self.hidden_size=self.vision_tower.output_dim
 
         self.is_loaded = True
 
@@ -94,11 +95,11 @@ class TinyCLIPVisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype, select_layer=self.select_layer).unsqueeze(0))
+                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype, select_layer=self.select_layer, return_pool_result=False).unsqueeze(0))
                 # image_feature = self.feature_select(image_forward_out).to(image.dtype)
                 image_features.append(image_feature)
         else:
-            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype), select_layer=self.select_layer)
+            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype), select_layer=self.select_layer, return_pool_result=False)
             # image_features = self.feature_select(image_forward_outs).to(images.dtype)
 
         return image_features

@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
 
-from transformers import CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig
-
+from transformers import (CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig)
+from ..language_model.siglip.modeling_siglip import SiglipVisionModel
+from ..language_model.siglip.configuration_siglip import SiglipVisionConfig
+from ..language_model.siglip.image_processing_siglip import SiglipImageProcessor
 
 class CLIPVisionTower(nn.Module):
     def __init__(self, vision_tower, args, delay_load=False):
@@ -11,6 +13,14 @@ class CLIPVisionTower(nn.Module):
         self.is_loaded = False
 
         self.vision_tower_name = vision_tower
+        if 'siglip' in self.vision_tower_name:
+            self.vision_config = SiglipVisionConfig
+            self.vision_model = SiglipVisionModel
+            self.processor = SiglipImageProcessor
+        else:
+            self.vision_config = CLIPVisionConfig
+            self.vision_model = CLIPVisionModel
+            self.processor = CLIPImageProcessor
         self.select_layer = args.mm_vision_select_layer
         self.select_feature = getattr(args, 'mm_vision_select_feature', 'patch')
 
@@ -19,11 +29,11 @@ class CLIPVisionTower(nn.Module):
         elif getattr(args, 'unfreeze_mm_vision_tower', False):
             self.load_model()
         else:
-            self.cfg_only = CLIPVisionConfig.from_pretrained(self.vision_tower_name)
+            self.cfg_only = self.vision_config.from_pretrained(self.vision_tower_name)
 
     def load_model(self):
-        self.image_processor = CLIPImageProcessor.from_pretrained(self.vision_tower_name)
-        self.vision_tower = CLIPVisionModel.from_pretrained(self.vision_tower_name)
+        self.image_processor = self.processor.from_pretrained(self.vision_tower_name)
+        self.vision_tower = self.vision_model.from_pretrained(self.vision_tower_name)
         # if self.args.freeze_backbone:
         self.vision_tower.requires_grad_(False)
 
