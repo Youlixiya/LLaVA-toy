@@ -32,6 +32,7 @@ deepspeed llava/train/train_mem.py \
     --lazy_preprocess True \
     --report_to wandb
 # --lora_enable True --lora_r 128 --lora_alpha 256 --mm_projector_lr 2e-5 \
+# --pretrain_mm_mlp_adapter ./checkpoints/llava-openclip-convnext-tinyllama-v1.0-1.1b-3t-pretrain/mm_projector.bin \
 deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero3.json \
     --model_name_or_path ./ckpts/TinyLlama-1.1B-intermediate-step-1431k-3T \

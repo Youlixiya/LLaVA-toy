@@ -70,7 +70,7 @@ class OpenCLIPVisionTower(nn.Module):
             self.load_model()
 
     def load_model(self):
-        self.image_processor = OpenCLIPImageProcessor(image_size=self.image_size)
+        self.image_processor = OpenCLIPImageProcessor()
         self.vision_tower = CLIPConvNeXt(self.open_clip_checkpoint, select_layer=self.select_layer)
         self.vision_tower.requires_grad_(False)
         # self.hidden_size=self.vision_tower.output_dim
@@ -130,9 +130,9 @@ class OpenCLIPVisionTower(nn.Module):
         #     return self.cfg_only
 
     @property
-    def hidden_size(self):
-        return self.vision_tower.hidden_size
+    def num_patches_per_side(self):
+        return 20
 
-    # @property
-    # def num_patches(self):
-    #     return (self.config.image_size // self.config.patch_size) ** 2
+    @property
+    def num_patches(self):
+        return 400
