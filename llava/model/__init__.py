@@ -10,5 +10,6 @@ try:
     from .language_model.llava_opt import LlavaOPTForCausalLM, LlavaOPTConfig
     from .language_model.llava_sam_opt import LlavaSAMOPTForCausalLM, LlavaSAMOPTConfig
     from .language_model.llava_tap_opt import LlavaTAPOPTForCausalLM, LlavaTAPOPTConfig
+    from .language_model.llava_qwen import LlavaQwen2ForCausalLM, LlavaQwen2Config
 except:
     pass

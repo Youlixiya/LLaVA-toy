@@ -440,6 +440,18 @@ conv_opt = Conversation(
     sep2="</s>",
 )
 
+conv_qwen = Conversation(
+    system="A chat between a curious user and an artificial intelligence assistant. "
+    "The assistant gives helpful, detailed, and polite answers to the user's questions.",
+    roles=("USER", "ASSISTANT"),
+    version="qwen",
+    messages=(),
+    offset=0,
+    sep_style=SeparatorStyle.TWO,
+    sep=" ",
+    sep2="<|endoftext|>",
+)
+
 default_conversation = conv_vicuna_v1
 conv_templates = {
     "default": conv_vicuna_v0,
@@ -463,6 +475,7 @@ conv_templates = {
     'phi': conv_phi,
     'opt': conv_opt,
     "mpt": conv_mpt,
+    'qwen': conv_qwen
 }
 
 

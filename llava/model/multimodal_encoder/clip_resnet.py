@@ -196,3 +196,5 @@ class ModifiedResNet(nn.Module):
             return hidden_states[select_layer]
 def build_tinyclip_resnet(layers=[3, 4, 6, 3], output_dim=1024, heads=28, image_size=224, width=56):
     return ModifiedResNet(layers, output_dim, heads, image_size, width)
+def build_clip_resnet50x16(layers=[6, 8, 18, 8], output_dim=768, heads=48, image_size=384, width=96):
+    return ModifiedResNet(layers, output_dim, heads, image_size, width)

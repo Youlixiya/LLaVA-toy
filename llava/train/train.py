@@ -802,11 +802,11 @@ def preprocess(
         return preprocess_llama_2(sources, tokenizer, has_image=has_image)
     if conversation_lib.default_conversation.version.startswith("v1"):
         return preprocess_v1(sources, tokenizer, has_image=has_image)
-    if conversation_lib.default_conversation.version == "mpt":
+    if conversation_lib.default_conversation.version in ["mpt"]:
         return preprocess_mpt(sources, tokenizer, has_image=has_image)
-    if conversation_lib.default_conversation.version.startswith('phi'):
+    if conversation_lib.default_conversation.version in ['phi', 'qwen']:
         return preprocess_phi(sources, tokenizer, has_image=has_image)
-    if conversation_lib.default_conversation.version.startswith('opt'):
+    if conversation_lib.default_conversation.version in ['opt']:
         return preprocess_opt(sources, tokenizer, has_image=has_image)
     # add end signal and concatenate together
     conversations = []
@@ -1024,6 +1024,14 @@ def train(attn_implementation=None):
                 torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
                 **bnb_model_from_pretrained_args
             )
+        elif 'qwen' in model_args.model_name_or_path.lower():
+            model = LlavaQwen2ForCausalLM.from_pretrained(
+                model_args.model_name_or_path,
+                cache_dir=training_args.cache_dir,
+                attn_implementation=attn_implementation,
+                torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                **bnb_model_from_pretrained_args
+            )
         elif 'opt' in model_args.model_name_or_path.lower():
             if 'sam' in model_args.model_name_or_path:
                 model = LlavaSAMOPTForCausalLM.from_pretrained(
@@ -1165,6 +1173,10 @@ def train(attn_implementation=None):
     else:
         if model_args.version != 'opt':
             tokenizer.pad_token = tokenizer.unk_token
+        elif model_args.version == "qwen":
+            tokenizer.pad_token = "<pad>"
+            tokenizer.add_tokens(["<pad>"], special_tokens=True)
+            tokenizer.pad_token = "<pad>"
         if model_args.version in conversation_lib.conv_templates:
             conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
         else:

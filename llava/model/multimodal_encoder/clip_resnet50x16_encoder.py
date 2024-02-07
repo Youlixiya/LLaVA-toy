@@ -3,7 +3,7 @@ import torch.nn as nn
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 # from tokenize_anything import model_registry
-from .clip_resnet import build_tinyclip_resnet
+from .clip_resnet import build_clip_resnet50x16
 class BaseProcessor:
     def __init__(self):
         self.transform = lambda x: x
@@ -21,16 +21,17 @@ class BaseImageProcessor(BaseProcessor):
 
         self.normalize = transforms.Normalize(mean, std)
 
-class TinyCLIPImageProcessor(BaseImageProcessor):
-    def __init__(self, image_size=1024, mean=None, std=None):
+class CLIPImageProcessor(BaseImageProcessor):
+    def __init__(self, image_size=384, mean=None, std=None):
         super().__init__(mean=mean, std=std)
         self.crop_size = {'height':image_size,
                           'width': image_size}
         self.transform = transforms.Compose(
             [
                 transforms.Resize(
-                    (image_size, image_size), interpolation=InterpolationMode.BICUBIC
+                    image_size, interpolation=InterpolationMode.BICUBIC
                 ),
+                transforms.CenterCrop(image_size),
                 transforms.ToTensor(),
                 self.normalize,
             ]
@@ -50,11 +51,11 @@ class TinyCLIPImageProcessor(BaseImageProcessor):
         return {'pixel_values': images_tensor}
         
 
-class TinyCLIPVisionTower(nn.Module):
-    hidden_size=896
-    num_patches=4096
-    image_size=1024
-    tinyclip_checkpoint='./ckpts/tinyclip/tinyclip_resnet.pt'
+class CLIPResNet50x16VisionTower(nn.Module):
+    hidden_size=1536
+    num_patches=576
+    image_size=384
+    tinyclip_checkpoint='./ckpts/clip/clip_resnet50x16.pt'
     def __init__(self, vision_tower, args, delay_load=False):
         super().__init__()
 
@@ -73,8 +74,8 @@ class TinyCLIPVisionTower(nn.Module):
             self.load_model()
 
     def load_model(self):
-        self.image_processor = TinyCLIPImageProcessor(image_size=self.image_size)
-        self.vision_tower = build_tinyclip_resnet()
+        self.image_processor = CLIPImageProcessor(image_size=self.image_size)
+        self.vision_tower = build_clip_resnet50x16()
         self.vision_tower.requires_grad_(False)
         # self.hidden_size=self.vision_tower.output_dim
 
