@@ -14,6 +14,8 @@ def build_vision_tower(vision_tower_cfg, **kwargs):
         return TAPVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
     elif 'tinyclip' in vision_tower:
         return TinyCLIPVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
+    elif 'openclip' in vision_tower:
+        return OpenCLIPVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
     elif 'clip_resnet50x16' in vision_tower:
         return CLIPResNet50x16VisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
     is_absolute_path_exists = os.path.exists(vision_tower)

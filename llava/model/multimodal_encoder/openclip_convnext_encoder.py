@@ -18,7 +18,8 @@ class BaseImageProcessor(BaseProcessor):
             mean = (0.48145466, 0.4578275, 0.40821073)
         if std is None:
             std = (0.26862954, 0.26130258, 0.27577711)
-
+        self.image_mean = mean
+        self.image_std = std
         self.normalize = transforms.Normalize(mean, std)
 
 class OpenCLIPImageProcessor(BaseImageProcessor):
@@ -29,8 +30,9 @@ class OpenCLIPImageProcessor(BaseImageProcessor):
         self.transform = transforms.Compose(
             [
                 transforms.Resize(
-                    (image_size, image_size), interpolation=InterpolationMode.BICUBIC
+                    image_size, interpolation=InterpolationMode.BICUBIC
                 ),
+                transforms.CenterCrop(image_size),
                 transforms.ToTensor(),
                 self.normalize,
             ]

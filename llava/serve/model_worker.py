@@ -154,7 +154,7 @@ class ModelWorker:
         else:
             images = None
             image_args = {}
-
+        print(prompt)
         temperature = float(params.get("temperature", 1.0))
         top_p = float(params.get("top_p", 1.0))
         max_context_length = getattr(model.config, 'max_position_embeddings', 2048)

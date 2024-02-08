@@ -33,6 +33,12 @@ def main(args):
 
     if 'llama-2' in model_name.lower():
         conv_mode = "llava_llama_2"
+    elif 'tinyllama' in model_name.lower():
+        conv_mode = "llava_tinyllama"
+    elif 'phi' in  model_name.lower():
+        conv_mode = "phi"
+    elif 'qwen' in  model_name.lower():
+        conv_mode = 'qwen'
     elif 'opt' in model_name.lower():
         conv_mode = "opt"
     elif "v1" in model_name.lower():

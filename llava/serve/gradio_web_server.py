@@ -170,6 +170,10 @@ def http_bot(state, model_selector, temperature, top_p, max_new_tokens, request:
                 template_name = "llava_llama_2"
             elif 'tinyllama' in model_name.lower():
                 template_name = "llava_tinyllama"
+            elif 'phi' in  model_name.lower():
+                template_name = "phi"
+            elif 'qwen' in  model_name.lower():
+                template_name = "qwen"
             elif "mistral" in model_name.lower() or "mixtral" in model_name.lower():
                 if 'orca' in model_name.lower():
                     template_name = "mistral_orca"
@@ -201,6 +205,7 @@ def http_bot(state, model_selector, temperature, top_p, max_new_tokens, request:
             template_name = "llama_2"
         else:
             template_name = "vicuna_v1"
+        # template_name = "qwen"
         new_state = conv_templates[template_name].copy()
         new_state.append_message(new_state.roles[0], state.messages[-2][1])
         new_state.append_message(new_state.roles[1], None)

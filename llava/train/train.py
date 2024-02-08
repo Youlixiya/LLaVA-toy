@@ -33,6 +33,8 @@ from llava.train.llava_trainer import LLaVATrainer
 
 from llava import conversation as conversation_lib
 from llava.model import *
+from llava.model.language_model.qwen2.tokenization_qwen2 import Qwen2Tokenizer
+# from llava.model.language_model.llava_qwen import LlavaQwenForCausalLM
 from llava.mm_utils import tokenizer_image_token
 
 from PIL import Image
@@ -1025,7 +1027,7 @@ def train(attn_implementation=None):
                 **bnb_model_from_pretrained_args
             )
         elif 'qwen' in model_args.model_name_or_path.lower():
-            model = LlavaQwen2ForCausalLM.from_pretrained(
+            model = LlavaQwenForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
                 cache_dir=training_args.cache_dir,
                 attn_implementation=attn_implementation,
@@ -1152,6 +1154,17 @@ def train(attn_implementation=None):
             use_fast=False,
         )
         tokenizer.add_special_tokens({'unk_token': '<|extra_0|>'})
+    elif 'qwen' in model_args.model_name_or_path.lower():
+        tokenizer = transformers.AutoTokenizer.from_pretrained(
+            model_args.model_name_or_path,
+            cache_dir=training_args.cache_dir,
+            model_max_length=training_args.model_max_length,
+            padding_side="right",
+            use_fast=False,
+        )
+        tokenizer.add_tokens(["<pad>"], special_tokens=True)
+        tokenizer.pad_token = "<pad>"
+        tokenizer.unk_token = tokenizer.pad_token
     else:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
             model_args.model_name_or_path,
@@ -1171,12 +1184,9 @@ def train(attn_implementation=None):
     elif model_args.version == "v0.5":
         tokenizer.pad_token = tokenizer.unk_token
     else:
-        if model_args.version != 'opt':
+        if model_args.version not in ['opt', "qwen"]:
             tokenizer.pad_token = tokenizer.unk_token
-        elif model_args.version == "qwen":
-            tokenizer.pad_token = "<pad>"
-            tokenizer.add_tokens(["<pad>"], special_tokens=True)
-            tokenizer.pad_token = "<pad>"
+            
         if model_args.version in conversation_lib.conv_templates:
             conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
         else:
