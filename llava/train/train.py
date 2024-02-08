@@ -1162,9 +1162,7 @@ def train(attn_implementation=None):
             padding_side="right",
             use_fast=False,
         )
-        tokenizer.add_tokens(["<pad>"], special_tokens=True)
-        tokenizer.pad_token = "<pad>"
-        tokenizer.unk_token = tokenizer.pad_token
+        tokenizer.add_special_tokens({'unk_token': '<|extra_0|>', 'eos_token': '<|endoftext|>'})
     else:
         tokenizer = transformers.AutoTokenizer.from_pretrained(
             model_args.model_name_or_path,
@@ -1184,8 +1182,9 @@ def train(attn_implementation=None):
     elif model_args.version == "v0.5":
         tokenizer.pad_token = tokenizer.unk_token
     else:
-        if model_args.version not in ['opt', "qwen"]:
+        if model_args.version not in ['opt']:
             tokenizer.pad_token = tokenizer.unk_token
+            model.config.pad_token_id = tokenizer.pad_token_id
             
         if model_args.version in conversation_lib.conv_templates:
             conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]

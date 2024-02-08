@@ -441,7 +441,8 @@ conv_opt = Conversation(
 )
 
 conv_qwen = Conversation(
-    system="You are a helpful assistant.",
+    system="A chat between a curious user and an artificial intelligence assistant. "
+    "The assistant gives helpful, detailed, and polite answers to the user's questions.",
     roles=("USER", "ASSISTANT"),
     version="qwen",
     messages=(),

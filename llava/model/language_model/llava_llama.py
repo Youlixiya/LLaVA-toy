@@ -14,7 +14,6 @@
 
 
 from typing import List, Optional, Tuple, Union
-
 import torch
 import torch.nn as nn
 
@@ -25,6 +24,8 @@ from transformers.modeling_outputs import CausalLMOutputWithPast
 from transformers.generation.utils import GenerateOutput
 
 from ..llava_arch import LlavaMetaModel, LlavaMetaForCausalLM
+from ..multimodal_encoder.sam_llava_image_encoder import SAMLlavaImageEncoder
+from edge_sam import SamPredictor, sam_model_registry
 
 
 class LlavaConfig(LlamaConfig):
@@ -153,6 +154,35 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
         if image_sizes is not None:
             inputs['image_sizes'] = image_sizes
         return inputs
+    
+class SAMLlavaConfig(LlavaConfig):
+    model_type = "sam_llava_llama"
+
+class SAMLlavaLlamaForCausalLM(LlavaLlamaForCausalLM):
+    config_class = SAMLlavaConfig
+
+    def __init__(self, config, **kwarge):
+        super(LlavaLlamaForCausalLM, self).__init__(config)
+        # for key, value in kwarge.items():
+        #     setattr(config, key, value)
+        if 'sam_adapter_ckpts' in kwarge.keys():
+            sam_adapter_ckpts = kwarge['sam_adapter_ckpts']
+        else:
+            sam_adapter_ckpts = ''
+        if 'custom_sam_ckpts' in kwarge.keys():
+            custom_sam_ckpts = kwarge['custom_sam_ckpts']
+        else:
+            custom_sam_ckpts = None
+        sam_llava_image_encoder = SAMLlavaImageEncoder(self.model.vision_tower, sam_adapter_ckpts=sam_adapter_ckpts)
+        self.sam = sam_model_registry['custom_sam'](checkpoint=custom_sam_ckpts)
+        self.sam.image_encoder = sam_llava_image_encoder
+        self.sam_predictor = SamPredictor(self.sam)
+        
+
+        # Initialize weights and apply final processing
+        self.post_init()
 
 AutoConfig.register("llava_llama", LlavaConfig)
 AutoModelForCausalLM.register(LlavaConfig, LlavaLlamaForCausalLM)
+AutoConfig.register("sam_lava_llama", SAMLlavaConfig)
+AutoModelForCausalLM.register(SAMLlavaConfig, SAMLlavaLlamaForCausalLM)

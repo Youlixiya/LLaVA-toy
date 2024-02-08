@@ -23,7 +23,7 @@ class CLIPConvNeXt(nn.Module):
     def dtype(self):
         return self.visual.stem[0].weight.data.dtype
     
-    def forward(self, x):
+    def forward(self, x, return_all_stage=False):
         x = self.visual.stem(x)
         features = []
         for stage in self.visual.stages:
@@ -31,4 +31,7 @@ class CLIPConvNeXt(nn.Module):
             features.append(x)
         feature = features[self.select_layer]
         b, c, h, w = feature.shape
-        return feature.reshape(b, c, -1).permute(0, 2, 1)
+        if return_all_stage:
+            return features, feature.reshape(b, c, -1).permute(0, 2, 1)
+        else:
+            return feature.reshape(b, c, -1).permute(0, 2, 1)

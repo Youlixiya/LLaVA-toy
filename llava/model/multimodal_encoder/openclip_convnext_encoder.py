@@ -94,14 +94,29 @@ class OpenCLIPVisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0))
+                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0), True)[0]
                 # image_feature = self.feature_select(image_forward_out).to(image.dtype)
                 image_features.append(image_feature)
         else:
-            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype))
+            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype), True)[0]
             # image_features = self.feature_select(image_forward_outs).to(images.dtype)
 
         return image_features
+    
+    # @torch.no_grad()
+    # def forward_all_stages(self, images):
+    #     if type(images) is list:
+    #         image_features = []
+    #         for image in images:
+    #             image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0))
+    #             # image_feature = self.feature_select(image_forward_out).to(image.dtype)
+    #             image_features.append(image_feature)
+    #     else:
+    #         image_feature = self.vision_tower(images.to(device=self.device, dtype=self.dtype))
+    #         image_features.append(image_feature)
+    #         # image_features = self.feature_select(image_forward_outs).to(images.dtype)
+
+    #     return image_features
 
     @property
     def dummy_feature(self):
