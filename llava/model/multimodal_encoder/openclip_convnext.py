@@ -31,7 +31,7 @@ class CLIPConvNeXt(nn.Module):
             features.append(x)
         feature = features[self.select_layer]
         b, c, h, w = feature.shape
+        outputs = [feature.reshape(b, c, -1).permute(0, 2, 1)]
         if return_all_stage:
-            return features, feature.reshape(b, c, -1).permute(0, 2, 1)
-        else:
-            return feature.reshape(b, c, -1).permute(0, 2, 1)
+            outputs.append(features)
+        return outputs

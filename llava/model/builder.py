@@ -53,7 +53,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             print('Loading LLaVA from base model...')
             if 'llama' in model_name.lower():
                 if 'sam' in  model_name.lower():
-                    model = LlavaSAMLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
+                    model = SAMLlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
                 else:
                     model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
             elif 'phi' in model_name.lower():
@@ -175,7 +175,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             else:
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 if 'sam' in  model_name.lower():
-                    model = LlavaSAMLlamaForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
+                    model = SAMLlavaLlamaForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
                 else:
                     model = LlavaLlamaForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
     else:

@@ -33,7 +33,7 @@ deepspeed llava/train/train_mem.py \
     --report_to wandb
 
 deepspeed llava/train/train_mem.py \
-    --deepspeed ./scripts/zero3.json \
+    --deepspeed ./scripts/zero2.json \
     --model_name_or_path ./ckpts/phi-2 \
     --version phi \
     --data_path data/llava_v1_5_mix665k.json \

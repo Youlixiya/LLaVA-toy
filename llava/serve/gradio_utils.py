@@ -87,7 +87,7 @@ class Chat:
         max_new_tokens = 1024
 
         stop_str = conv_templates[self.conv_mode].copy().sep if conv_templates[self.conv_mode].copy().sep_style != SeparatorStyle.TWO else conv_templates[self.conv_mode].copy().sep2
-        keywords = [stop_str]
+        keywords = [stop_str, "<|im_end|>", "<|im_start|>"]
         stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
         streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
 
@@ -102,15 +102,20 @@ class Chat:
                 use_cache=True,
                 stopping_criteria=[stopping_criteria])
 
-        input_token_len = input_ids.shape[1]
-        n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
-        if n_diff_input_output > 0:
-            print(f'[Warning] {n_diff_input_output} output_ids are not the same as the input_ids')
-        outputs = tokenizer.batch_decode(output_ids[:, input_token_len:], skip_special_tokens=True)[0]
-        outputs = outputs.strip()
-        if outputs.endswith(stop_str):
-            outputs = outputs[:-len(stop_str)]
-        outputs = outputs.strip()
+        # outputs = tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
+        # if outputs.endswith(stop_str):
+        #     outputs = outputs[:-len(stop_str)]
+        # outputs = outputs.strip()
+        # input_token_len = input_ids.shape[1]
+        # n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
+        # if n_diff_input_output > 0:
+        #     print(f'[Warning] {n_diff_input_output} output_ids are not the same as the input_ids')
+        # outputs = tokenizer.batch_decode(output_ids[:, input_token_len:], skip_special_tokens=True)[0]
+        # outputs = outputs.strip()
+        # if outputs.endswith(stop_str):
+        #     outputs = outputs[:-len(stop_str)]
+        # outputs = outputs.strip()
+        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
 
         print('response', outputs)
         return outputs, state

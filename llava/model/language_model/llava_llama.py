@@ -101,7 +101,17 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict
         )
-
+        
+    # def prepare_inputs_for_generation(self, input_ids, past_key_values=None, inputs_embeds=None, **kwargs):
+    # #     import ipdb
+    # #     ipdb.set_trace()
+    #     images = kwargs.pop("images", None)
+    #     _inputs = super().prepare_inputs_for_generation(
+    #         input_ids, past_key_values=past_key_values, inputs_embeds=inputs_embeds, **kwargs
+    #     )
+    #     if images is not None:
+    #         _inputs['images'] = images
+    #     return _inputs
     @torch.no_grad()
     def generate(
         self,
@@ -162,27 +172,37 @@ class SAMLlavaLlamaForCausalLM(LlavaLlamaForCausalLM):
     config_class = SAMLlavaConfig
 
     def __init__(self, config, **kwarge):
-        super(LlavaLlamaForCausalLM, self).__init__(config)
-        # for key, value in kwarge.items():
-        #     setattr(config, key, value)
-        if 'sam_adapter_ckpts' in kwarge.keys():
-            sam_adapter_ckpts = kwarge['sam_adapter_ckpts']
-        else:
-            sam_adapter_ckpts = ''
-        if 'custom_sam_ckpts' in kwarge.keys():
-            custom_sam_ckpts = kwarge['custom_sam_ckpts']
-        else:
-            custom_sam_ckpts = None
-        sam_llava_image_encoder = SAMLlavaImageEncoder(self.model.vision_tower, sam_adapter_ckpts=sam_adapter_ckpts)
+        super(SAMLlavaLlamaForCausalLM, self).__init__(config)
+        for key, value in kwarge.items():
+            setattr(config, key, value)
+        self.config = config
+        # Initialize weights and apply final processing
+        self.post_init()
+        
+        
+        # self.sam.image_encoder = sam_llava_image_encoder
+        # self.sam_predictor = SamPredictor(self.sam)
+    
+    def load_sam_image_encoder(self):
+        vision_tower = self.model.get_vision_tower()
+        if not vision_tower.is_loaded:
+            vision_tower.load_model()
+        sam_adapter_ckpts = self.config.sam_adapter_ckpts
+        custom_sam_ckpts = self.config.custom_sam_ckpts
         self.sam = sam_model_registry['custom_sam'](checkpoint=custom_sam_ckpts)
+        vision_tower = self.model.get_vision_tower()
+        sam_llava_image_encoder = SAMLlavaImageEncoder(vision_tower, sam_adapter_ckpts=sam_adapter_ckpts)
         self.sam.image_encoder = sam_llava_image_encoder
         self.sam_predictor = SamPredictor(self.sam)
         
-
-        # Initialize weights and apply final processing
-        self.post_init()
+        
+    
+    # def post_init(self):
+    #     self.sam.image_encoder = self.sam_llava_image_encoder
+    #     self.sam_predictor = SamPredictor(self.sam)
+    #     super().post_init
 
 AutoConfig.register("llava_llama", LlavaConfig)
 AutoModelForCausalLM.register(LlavaConfig, LlavaLlamaForCausalLM)
-AutoConfig.register("sam_lava_llama", SAMLlavaConfig)
+AutoConfig.register("sam_llava_llama", SAMLlavaConfig)
 AutoModelForCausalLM.register(SAMLlavaConfig, SAMLlavaLlamaForCausalLM)

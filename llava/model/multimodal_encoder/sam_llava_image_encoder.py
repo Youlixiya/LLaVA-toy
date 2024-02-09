@@ -17,6 +17,7 @@ class LayerNorm2d(nn.Module):
         return x
     
 class SAMLlavaImageEncoder(nn.Module):
+    img_size=1024
     def __init__(self,
                  clip_vision_tower,
                  sam_adapter_ckpts='',
@@ -27,7 +28,7 @@ class SAMLlavaImageEncoder(nn.Module):
         self.adapter = nn.ModuleList()
         kernel_size_list = [4, 2, 1, -2]
         for i in range(stages):
-            input_chans = self.visual.stages[i].blocks[0].norm.weight.shape[0]
+            input_chans = self.clip_vision_tower.vision_tower.visual.stages[i].blocks[0].norm.weight.shape[0]
             stage = []
             kernel_size = kernel_size_list[i]
             if kernel_size < 0:
@@ -42,15 +43,15 @@ class SAMLlavaImageEncoder(nn.Module):
             stage.append(LayerNorm2d(out_chans))
             stage.append(ConvNeXtBlock(out_chans, out_chans))
             self.adapter.append(nn.Sequential(*stage))
-        if adapter_ckpts:
+        if sam_adapter_ckpts:
             self.adapter.load_state_dict(torch.load(sam_adapter_ckpts))
     
     def forward(self, x):
-        vision_tower = self.clip_vision_tower
-        x = vision_tower.stem(x)
+        vision_tower = self.clip_vision_tower.vision_tower
+        x = vision_tower.visual.stem(x)
         features = []
-        for i in range(len(vision_tower.stages)):
-            stage = vision_tower.stages[i]
+        for i in range(len(vision_tower.visual.stages)):
+            stage = vision_tower.visual.stages[i]
             x = stage(x)
             features.append(self.adapter[i](x))
         return sum(features)

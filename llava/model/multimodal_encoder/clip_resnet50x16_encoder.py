@@ -97,11 +97,11 @@ class CLIPResNet50x16VisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype, select_layer=self.select_layer, return_pool_result=False).unsqueeze(0))
+                image_feature = self.vision_tower(image.to(device=self.device, dtype=self.dtype, select_layer=self.select_layer, return_pool_result=False).unsqueeze(0))[0]
                 # image_feature = self.feature_select(image_forward_out).to(image.dtype)
                 image_features.append(image_feature)
         else:
-            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype), select_layer=self.select_layer, return_pool_result=False)
+            image_features = self.vision_tower(images.to(device=self.device, dtype=self.dtype), select_layer=self.select_layer, return_pool_result=False)[0]
             # image_features = self.feature_select(image_forward_outs).to(images.dtype)
 
         return image_features

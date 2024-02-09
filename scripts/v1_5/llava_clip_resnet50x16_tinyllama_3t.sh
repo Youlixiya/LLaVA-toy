@@ -34,9 +34,9 @@ deepspeed llava/train/train_mem.py \
     --report_to wandb
 
 deepspeed llava/train/train_mem.py \
-    --deepspeed ./scripts/zero3.json \
-    --model_name_or_path ./ckpts/phi-2 \
-    --version phi \
+    --deepspeed ./scripts/zero2.json \
+    --model_name_or_path ./ckpts/TinyLlama-1.1B-intermediate-step-1431k-3T \
+    --version llava_tinyllama \
     --data_path data/llava_v1_5_mix665k.json \
     --image_folder data \
     --vision_tower clip_resnet50x16 \
@@ -45,6 +45,7 @@ deepspeed llava/train/train_mem.py \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
+    --image_aspect_ratio pad \
     --group_by_modality_length True \
     --bf16 True \
     --output_dir ./checkpoints/llava-clip-resnet50x16-tinyllama-1.1b-3t \

@@ -122,7 +122,7 @@ elif 'phi' in model_path.lower():  # FIXME: first
     conv_mode = "phi"
 elif 'stablelm' in model_path.lower():  # FIXME: first
     conv_mode = "stablelm"
-elif 'llava_tinyllama' in model_path.lower():  # FIXME: first
+elif 'tinyllama' in model_path.lower():  # FIXME: first
     conv_mode = "llava_tinyllama"
 else:
     conv_mode = "v1"
@@ -162,11 +162,7 @@ with gr.Blocks(title='SAM-LLaVA🚀', theme=gr.themes.Default(), css=block_css) 
                     [
                         f"{cur_dir}/examples/waterview.jpg",
                         "What are the things I should be cautious about when I visit here?",
-                    ],
-                    [
-                        f"{cur_dir}/examples/desert.jpg",
-                        "If there are factual errors in the questions, point it out; if not, proceed answering the question. What’s happening in the desert?",
-                    ],
+                    ]
                 ],
                 inputs=[image1, textbox],
             )

@@ -153,3 +153,7 @@ class OpenCLIPVisionTower(nn.Module):
     @property
     def num_patches(self):
         return 400
+    
+    @property
+    def hidden_size(self):
+        return self.vision_tower.hidden_size
