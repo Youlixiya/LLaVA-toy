@@ -5,6 +5,7 @@ from .tap_encoder import TAPVisionTower
 from .tinyclip_encoder import TinyCLIPVisionTower
 from .openclip_convnext_encoder import OpenCLIPVisionTower
 from .clip_resnet50x16_encoder import CLIPResNet50x16VisionTower
+from .openclip_convnext_sam_encoder import OpenCLIPSAMVisionTower
 
 def build_vision_tower(vision_tower_cfg, **kwargs):
     vision_tower = getattr(vision_tower_cfg, 'mm_vision_tower', getattr(vision_tower_cfg, 'vision_tower', None))
@@ -18,6 +19,8 @@ def build_vision_tower(vision_tower_cfg, **kwargs):
         return OpenCLIPVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
     elif 'clip_resnet50x16' in vision_tower:
         return CLIPResNet50x16VisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
+    elif 'openclip_sam' in vision_tower:
+        return OpenCLIPSAMVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
     is_absolute_path_exists = os.path.exists(vision_tower)
     is_absolute_path_exists = os.path.exists(vision_tower)
     if is_absolute_path_exists or vision_tower.startswith("openai") or vision_tower.startswith("laion") or "ShareGPT4V" in vision_tower:

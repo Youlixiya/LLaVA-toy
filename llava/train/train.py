@@ -905,7 +905,12 @@ class LazySupervisedDataset(Dataset):
                         result.paste(pil_img, ((height - width) // 2, 0))
                         return result
                 image = expand2square(image, tuple(int(x*255) for x in processor.image_mean))
-                image = processor.preprocess(image, return_tensors='pt')['pixel_values'][0]
+                # image = processor.preprocess(image, return_tensors='pt')['pixel_values'][0]
+            # else:
+            if isinstance(processor, list):
+                image = []
+                image.append(processor[0].preprocess(image, return_tensors='pt')['pixel_values'][0])
+                image.append(processor[1].preprocess(image, return_tensors='pt')['pixel_values'][0])
             else:
                 image = processor.preprocess(image, return_tensors='pt')['pixel_values'][0]
             sources = preprocess_multimodal(
@@ -960,10 +965,10 @@ class DataCollatorForSupervisedDataset(object):
 
         if 'image' in instances[0]:
             images = [instance['image'] for instance in instances]
-            if all(x is not None and x.shape == images[0].shape for x in images):
-                batch['images'] = torch.stack(images)
-            else:
-                batch['images'] = images
+            # if all(x is not None and x.shape == images[0].shape for x in images):
+            #     batch['images'] = torch.stack(images)
+            # else:
+            batch['images'] = images
 
         return batch
 
